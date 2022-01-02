@@ -1,8 +1,13 @@
 const express = require("express"); //导入express框架
-const { isError } = require("joi");
+const logger = require("./logger");
 const Joi = require("joi"); //导入数据验证库
 const api = express(); //创建框架实例
-api.use(express.json()); //开启中间件
+
+//创建中间件:中间件是在一个客户端连入之后必须经过的一个过程;
+//此中间件的作用是将一个刚连上服务的客户端里的数据转换成req.body数据供我们使用.
+api.use(express.json());
+
+api.use(logger);
 
 const routerName = "/api/genres";
 
@@ -40,7 +45,6 @@ api.get(`${routerName}/:id`, (req, res) => {
 api.post(routerName, (req, res) => {
   const { error } = dataByTrue(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-
   const createData = {
     id: userData.length + 1,
     name: req.body.name,
