@@ -4,10 +4,21 @@ const Joi = require("joi"); //导入数据验证库
 const api = express(); //创建框架实例
 
 //创建中间件:中间件是在一个客户端连入之后必须经过的一个过程;
-//此中间件的作用是将一个刚连上服务的客户端里的数据转换成req.body数据供我们使用.
+//此中间件的作用是将一个刚连上服务的客户端里的数据转换成req.body的JSON数据供我们使用.
 api.use(express.json());
 
+//logger中间件是自己创建的自定义中间件
 api.use(logger);
+
+//static中间件是向网页提供静态数据
+/*静态数据是存在与网站根目录到
+列：(http://localhost:3000/new.txt)
+并非(http://localhost:3000/api/genres/xxx)
+*/
+// api.use(express.static("public"));
+
+// urlencoded中间件是读取网页传来的数据，此方法已经很少被使用了
+// api.use(express.urlencoded({ extended: true }));
 
 const routerName = "/api/genres";
 
@@ -29,6 +40,7 @@ const dataByTrue = (data) => {
   return schema.validate(data);
 };
 
+//GET
 api.get(routerName, (_req, res) => {
   if (!userData)
     return res.status(404).send(`<h1>erreo! NotFund This Data!!!</h1>`);
@@ -42,6 +54,7 @@ api.get(`${routerName}/:id`, (req, res) => {
   res.send(ByTrue);
 });
 
+//POST
 api.post(routerName, (req, res) => {
   const { error } = dataByTrue(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -54,6 +67,7 @@ api.post(routerName, (req, res) => {
   res.send(createData);
 });
 
+//PUT
 api.put(`${routerName}/:id`, (req, res) => {
   const ByTrue = userData.find((c) => c.id === parseInt(req.params.id));
   //404
@@ -63,6 +77,7 @@ api.put(`${routerName}/:id`, (req, res) => {
   res.send(ByTrue);
 });
 
+//DELETE
 api.delete(`${routerName}/:id`, (req, res) => {
   const ByTrue = userData.find((c) => c.id === parseInt(req.params.id));
   //404
