@@ -1,14 +1,17 @@
 const express = require("express"); //导入express框架
-const logger = require("./logger");
 const Joi = require("joi"); //导入数据验证库
+// const logger = require("./logger"); //导入自定义中间件
+const helmet = require("helmet"); //helmet是加强http头安全性的一个中间件
+const morgan = require("morgan"); //morgan是一个记录http请求日志的中间件
 const api = express(); //创建框架实例
 
 //创建中间件:中间件是在一个客户端连入之后必须经过的一个过程;
 //此中间件的作用是将一个刚连上服务的客户端里的数据转换成req.body的JSON数据供我们使用.
 api.use(express.json());
-
+api.use(helmet());
+api.use(morgan("dev")); //tiny是简单的log记录方式,这里使用的是dev记录格式
 //logger中间件是自己创建的自定义中间件
-api.use(logger);
+// api.use(logger);
 
 //static中间件是向网页提供静态数据
 /*静态数据是存在与网站根目录到
@@ -17,7 +20,7 @@ api.use(logger);
 */
 // api.use(express.static("public"));
 
-// urlencoded中间件是读取网页传来的数据，此方法已经很少被使用了
+// urlencoded中间件是传递数组或者复杂的网页表单数据，此方法已经很少被使用了
 // api.use(express.urlencoded({ extended: true }));
 
 const routerName = "/api/genres";
