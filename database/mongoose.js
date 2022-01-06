@@ -79,16 +79,21 @@ const getCourse = async () => {
   /* 
   SM:Mongoose库基本搜索函数说明
   find查找数据,参接受一个对象,对象里的内容可以过滤数据.
-  limit表示只返回固定数据量
+  limit表示只返回固定数据数量
   sort排序,参接受一个对象,对象内容可以是name:1 or name:-1,正数表示升序,负数表示降序.
   select只返回对象的某些数据,参接受一个对象,对象内容可以是name:1,tage:1.正数表示确认
   count只返回符合搜索要求的数据数量
+  skip查询分页操作
   */
+  const pageNumber = 2;
+  const pageSize = 10;
+
   const allData = await Course.find({
     name: "zhanghaining",
     isPublished: true,
   })
-    .limit(1)
+    .skip((pageNumber - 1) * pageSize) //这里我声明的页码是从1开始的,页码不代表页的序列.
+    .limit(pageSize)
     .sort({ name: 1 })
     .select({ name: 1, tage: 1 });
   console.log("allData", allData);
