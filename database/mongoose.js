@@ -2,7 +2,7 @@ const { all } = require("express/lib/application");
 const mg = require("mongoose");
 
 //SM:连接MongoDBdataBase数据库
-mg.connect("mongodb://localhost/ventroar")
+mg.connect("mongodb://localhost/ventroar") //连接到此数据文档,如果没有默认则会创建
   .then(() => console.log("Connect DataBase......  OK"))
   .catch((err) => {
     console.log(`Could not connect to dataBase [ ${err} ] !!!`);
@@ -80,7 +80,8 @@ const getCourse = async () => {
   SM:Mongoose库基本搜索函数说明
   find查找数据,参接受一个对象,对象里的内容可以过滤数据.
   limit表示只返回固定数据数量
-  sort排序,参接受一个对象,对象内容可以是name:1 or name:-1,正数表示升序,负数表示降序.
+  sort排序,参接受一个对象,对象内容可以是{name:1} or {name:-1},正数表示升序,负数表示降序.
+  相同也可以用 'name' or '-name' 来表示升序和降序
   select只返回对象的某些数据,参接受一个对象,对象内容可以是name:1,tage:1.正数表示确认
   count只返回符合搜索要求的数据数量
   skip查询分页操作
@@ -88,7 +89,7 @@ const getCourse = async () => {
   const pageNumber = 2;
   const pageSize = 10;
 
-  const allData = await Course.find({
+  const Data = await Course.find({
     name: "zhanghaining",
     isPublished: true,
   })
@@ -96,7 +97,27 @@ const getCourse = async () => {
     .limit(pageSize)
     .sort({ name: 1 })
     .select({ name: 1, tage: 1 });
-  console.log("allData", allData);
+  console.log("allData", Data);
 };
 
-getCourse();
+//getCourse();
+
+//FUNCTION:更新数据库里某个文档数据
+const updata = async (id) => {
+  //findById会找到原来的表，此次更新并非创建一个新数据然后删除旧数据
+  const Data = await Course.findById(id);
+  if (!Data) return; //如果没找到此数据id，则终止运行
+  //修改数据部分代码(非实际情况)
+  //SM:可以利用set函数方法简便实现下面两行代码
+  // Data.name = "xxxxxxxxxxxxxxxxx";
+  // Data.isPublished = false;
+
+  Data.set({
+    name: "xxxxxxxx",
+    isPublished: false,
+  });
+  const result = await Data.save();
+  console.log(`${result} \n this data updata done.`);
+};
+
+updata("61d68f38251ba306d78abaf6");
