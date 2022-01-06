@@ -1,4 +1,3 @@
-const { all } = require("express/lib/application");
 const mg = require("mongoose");
 
 //SM:连接MongoDBdataBase数据库
@@ -23,9 +22,9 @@ const courseSchema = new mg.Schema({
 */
 const Course = mg.model("Course", courseSchema); //生成模版类
 
-//FUNCTION:创建数据并存入数据库
+//FUNCTION:创建数据并存入数据库POST
 //创建数据函数，因为内部需要执行异步操作，所以加上async关键字
-const createCourse = async () => {
+const createData = async () => {
   //创建用某个Schema模型类生成的实例,后面要将这个实例Obj保存到数据库里去
   const course = new Course({
     name: "zhanghaining",
@@ -38,7 +37,7 @@ const createCourse = async () => {
   console.log(`${result} \n this data all save in database done.`);
 };
 
-// createCourse()
+// createData()
 
 /*
 SM:MongoDB查询符:
@@ -73,8 +72,8 @@ find({name:/dsxk$/i})//默认会对字符大小写敏感,在第二个斜杠后�
 例子3:含有dsxk字符,这段字符前后可以含有其他文字
 find({name: / .*dsxk.* / })//.*表示在此字符串 前面或后面 可以有或者没有字符
 */
-//FUNCTION:查询数据库数据并获得
-const getCourse = async () => {
+//FUNCTION:查询数据库数据并获得GET
+const getData = async () => {
   //记得加await关键字
   /* 
   SM:Mongoose库基本搜索函数说明
@@ -97,17 +96,17 @@ const getCourse = async () => {
     .limit(pageSize)
     .sort({ name: 1 })
     .select({ name: 1, tage: 1 });
-  console.log("allData", Data);
+  console.log("allData ", Data);
 };
 
-//getCourse();
+//getData();
 
-//FUNCTION:更新数据库里某个文档数据
-const updata = async (id) => {
+//FUNCTION:更新数据库里某个文档数据或多个文档数据PUT
+const upData = async (id) => {
   //SM:更新操作有两种方法:
   //方法1、先查再改((需要发送多次数据))
   //findById会找到原来的表，此次更新并非创建一个新数据然后删除旧数据
-  const Data = await Course.findById(id);
+  const Data = await Course.findById(id); //如果没有此id则返回null
   if (!Data) return; //如果没找到此数据id，则终止运行
   //修改数据部分代码(非实际情况)
   //SM:可以利用set函数方法简便实现下面两行代码
@@ -123,8 +122,8 @@ const updata = async (id) => {
   /*方法2、只想修改或增加数据,不需要验证数据(只需要发送一次数据)
   ------------------SM:只更新对应id的数据--------------
   以下操作使用了mongoDB的部分运算符
-  参1:查询或者过滤,参2:要更新的数据
-    const result = await Course.updata({_id:id},{
+  参1:查询或者过滤对象,参2:要更新的数据
+    const result = await Course.updata({_id:id},{//如果没有此id则返回null
       $set:{
         name: "xxxxxxxx",
         isPublished: false,
@@ -134,7 +133,7 @@ const updata = async (id) => {
   */
 
   /*也可以利用findByIdAndUpdata,获得之更新对应id数据前或数据后的内容(只需要发送一次数据)
-  参1:查询或者过滤,参2:要更新的数据,
+  参1:查询或者过滤对象,参2:要更新的数据,
   参3:是否返回 更新前 或 更新后的数据,new默认为false数据返回为更新前,修改为true则为更新后
   const result = await Course.findByIdAndUpdata(id,{
       $set:{
@@ -146,4 +145,21 @@ const updata = async (id) => {
   */
 };
 
-// updata("61d68f38251ba306d78abaf6");
+// upData("61d68f38251ba306d78abaf6");
+
+//FUNCTION:删除某个文档DELETE
+const deleteData = async (id) => {
+  //只删除指定的一个数据
+  //参1:查询或者过滤对象
+  const result = await Course.deleteOne({ _id: id }); //如果没有此id则返回null
+  console.log(`${result}`);
+
+  //删除多个指定的数据
+  //参1:查询或者过滤对象
+  //const result = await Course.deleteMany({ _id: id });//如果没有此id则返回null
+
+  //删除并且返回已经删除的内容
+  //const result = await Course.findByIdAndRemove(id);//如果没有此id则返回null
+};
+
+//deleteData("61d68f38251ba306d78abaf6");
