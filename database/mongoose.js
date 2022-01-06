@@ -38,14 +38,51 @@ const createCourse = async () => {
   console.log(`${result} \n this data all save in database done.`);
 };
 
+// createCourse()
+
+/*
+SM:MongoDB查询符:
+eq:等于
+neq:不等于
+gt:大于
+gte:大于等于
+lt:小于
+lte:小于等于
+in:存在
+nin:不存在
+使用方法：
+find({价钱:{$gt:10}})//找出价钱大于10的数据.
+find({价钱:{$gt:10,$lt:20}})//找出价钱大于10,但小于20的数据.
+find({价钱:{$in:[10,15,20]})//只找出价钱有10,15,20的数据.
+
+SM:Mongoose库逻辑操作
+or:逻辑或(||)
+and:逻辑与(&&)
+使用方法：
+.or([{name:"dsxk"},{isPublished:true}])//有其中一项就返回
+.and([{name:"dsxk"},{isPublished:true}])//全部都含有就返回
+
+SM:MongoDB正则表达式
+--------------[双斜杠内的东西表示正则表达式]---------
+例子1:以dsxk字符开头
+find({name:/^dsxk/})
+例子2:以dsxk字符结尾
+find({name:/dsxk$/})
+例子3:以dsxk字符结尾,其字符大小写不敏感
+find({name:/dsxk$/i})//默认会对字符大小写敏感,在第二个斜杠后加上i表示字符大小写不敏感
+例子3:含有dsxk字符,这段字符前后可以含有其他文字
+find({name: / .*dsxk.* / })//.*表示在此字符串 前面或后面 可以有或者没有字符
+*/
 //FUNCTION:查询数据库数据并获得
 const getCourse = async () => {
   //记得加await关键字
-  /*
+  /* 
+  SM:Mongoose库基本搜索函数说明
   find查找数据,参接受一个对象,对象里的内容可以过滤数据.
   limit表示只返回固定数据量
   sort排序,参接受一个对象,对象内容可以是name:1 or name:-1,正数表示升序,负数表示降序.
   select只返回对象的某些数据,参接受一个对象,对象内容可以是name:1,tage:1.正数表示确认
+  count只返回符合搜索要求的数据数量
   */
   const allData = await Course.find({
     name: "zhanghaining",
