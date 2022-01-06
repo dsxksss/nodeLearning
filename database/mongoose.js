@@ -104,6 +104,8 @@ const getCourse = async () => {
 
 //FUNCTION:更新数据库里某个文档数据
 const updata = async (id) => {
+  //SM:更新操作有两种方法:
+  //方法1、先查再改((需要发送多次数据))
   //findById会找到原来的表，此次更新并非创建一个新数据然后删除旧数据
   const Data = await Course.findById(id);
   if (!Data) return; //如果没找到此数据id，则终止运行
@@ -111,13 +113,37 @@ const updata = async (id) => {
   //SM:可以利用set函数方法简便实现下面两行代码
   // Data.name = "xxxxxxxxxxxxxxxxx";
   // Data.isPublished = false;
-
   Data.set({
     name: "xxxxxxxx",
     isPublished: false,
   });
   const result = await Data.save();
   console.log(`${result} \n this data updata done.`);
+
+  /*方法2、只想修改或增加数据,不需要验证数据(只需要发送一次数据)
+  ------------------SM:只更新对应id的数据--------------
+  以下操作使用了mongoDB的部分运算符
+  参1:查询或者过滤,参2:要更新的数据
+    const result = await Course.updata({_id:id},{
+      $set:{
+        name: "xxxxxxxx",
+        isPublished: false,
+      }
+    });
+    console.log(`${result});
+  */
+
+  /*也可以利用findByIdAndUpdata,获得之更新对应id数据前或数据后的内容(只需要发送一次数据)
+  参1:查询或者过滤,参2:要更新的数据,
+  参3:是否返回 更新前 或 更新后的数据,new默认为false数据返回为更新前,修改为true则为更新后
+  const result = await Course.findByIdAndUpdata(id,{
+      $set:{
+        name: "xxxxxxxx",
+        isPublished: false,
+      },{new:true}
+    });
+    console.log(`${result});
+  */
 };
 
-updata("61d68f38251ba306d78abaf6");
+// updata("61d68f38251ba306d78abaf6");
